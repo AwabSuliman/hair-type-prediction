@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.ipynb_checkpoints
+data/
+*.jpg
+*.jpeg
+*.png
+*.log
+*.dylib
+*.so
+*.dll
+*.h5
+*.pt
+*.pth
