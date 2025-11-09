@@ -31,26 +31,33 @@ def resize_images(pathDataSet, labels, imageSize=(64,64)):
                     elif image.shape[-1] == 4: #for images w alpha 
                         image = image[...,:3] #to take first three dimension (so that alpha is dropped)
 
-                    imageResize = resize(image, imageSize, anti_aliasing=False)
+                    imageResize = resize(image, imageSize, anti_aliasing=True)
+                    imageResize = np.clip(imageResize, 0, 1)
+                    imageResize = imageResize.astype(np.float32)
+
+                    if not np.all(np.isfinite(imageResize)):
+                        print(f"Skipping {imagePath}: non-finite values found")
+                    
+
 
                     if imageResize.shape != (*imageSize, 3):
                         print(f" Skipping {imagePath}: unexpected shape {imageResize.shape}")
-    
+                    
+                    # hog_features = hog(
+                    #     imageResize,
+                    #     orientations=9,
+                    #     pixels_per_cell=(8, 8),
+                    #     cells_per_block=(2, 2),
+                    #     channel_axis=-1
+                    #         )
 
                     X.append(imageResize.flatten()) #cause scikitlearn takes vectors so we convert to vectors
                     Y.append(label)  #index of x is supposed to correspond to index of y
                 except Exception as e:
                     print(f" skipping {imagePath} {e}")
 
-        hog_features = hog(
-        imageResize,
-        orientations=9,
-        pixels_per_cell=(8, 8),
-        cells_per_block=(2, 2),
-        channel_axis=-1
-        )
+
     X = np.array(X)
     Y = np.array(Y)
     return X, Y
-
 

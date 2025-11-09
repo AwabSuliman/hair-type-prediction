@@ -9,6 +9,7 @@ from sklearn import metrics
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.decomposition import PCA
+import joblib
 
 Labels = ["curly", "dreadlocks", "kinky", "straight", "wavy"]
 filePath = "/Users/awab/Desktop/hair/data"
@@ -26,9 +27,7 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-pca = PCA(0.95)
-X_train_pca = pca.fit_transform(X_train_scaled)
-X_test_pca = pca.transform(X_test_scaled)
+
 
 # LinearSVCmodel = LinearSVC(max_iter=50000)
 # LinearSVCmodel.fit(X_train_scaled, Ytrain_encoded) 
@@ -43,21 +42,17 @@ X_test_pca = pca.transform(X_test_scaled)
 # LogisticRegressionmodel.fit(X_train_scaled, Ytrain_encoded) 
 
 
-models = {
-    "LinearSVC": LinearSVC(max_iter=20000, C=1, class_weight='balanced'),
-    "SVC_RBF": SVC(kernel='rbf', max_iter=20000),
-    "RandomForest": RandomForestClassifier(n_estimators=100),
-    "KNN": KNeighborsClassifier(n_neighbors=5),
-    "LogisticRegression": LogisticRegression(max_iter=20000)
-}
-
-for name, clf in models.items():
-    clf.fit(X_train_pca, Ytrain_encoded)
-    y_pred = clf.predict(X_test_pca)
-    acc = metrics.accuracy_score(Ytest_encoded, y_pred)
-    print(f"{name} accuracy: {acc:.3f}")
+model = SVC(kernel='rbf', max_iter=20000)
 
 
+model.fit(X_train_scaled, Ytrain_encoded)
+y_pred = model.predict(X_test_scaled)
+acc = metrics.accuracy_score(Ytest_encoded, y_pred)
+print("accuracy is:", acc)
+
+joblib.dump(model, "hair_model.pkl")
+joblib.dump(scaler, "scaler.pkl")
+joblib.dump(encoder, "label_encoder.pkl")
 
 
 
